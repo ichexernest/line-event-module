@@ -108,6 +108,7 @@ export default function CanvasEditor  ({ onSave }: CanvasEditorProps ) {
   const handleUploadImage = async (base64Image: string): Promise<string> => {
     try {
       const url = await uploadImage(base64Image);
+      console.log('Image uploaded successfully:', url);
       return url;
     } catch (error: unknown) {
       console.error(`Image upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`);

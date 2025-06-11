@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import ShareView from './ShareView';
-import { useLiffShare } from '../../hooks/useLiffShare';
+import { useLiff } from '../../hooks/useLiff';
 
 interface CurrentImg {
   image: string;
@@ -10,10 +10,9 @@ interface CurrentImg {
 
 const CanvasEditor = dynamic(() => import('./CanvasEditor'), { ssr: false });
 
-
-export default function CardMaker () {
-  // 使用 LIFF 分享 hook
-  const { shareImage, isReady: isLiffReady, error: liffError } = useLiffShare();
+export default function CardMaker() {
+  // 直接使用主要的 useLiff hook
+  const { shareImage, isReady, isLoading, error, isLoggedIn } = useLiff();
   
   // 狀態管理
   const [currentView, setCurrentView] = useState<'canva' | 'share'>('canva');
@@ -45,6 +44,15 @@ export default function CardMaker () {
     });
   };
 
+  // 如果還在載入中，顯示載入狀態
+  if (isLoading) {
+    return <div>Loading LIFF...</div>;
+  }
+
+  // 如果有錯誤，顯示錯誤訊息
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div>
@@ -53,11 +61,12 @@ export default function CardMaker () {
       ) : (
         <ShareView
           imageData={currentImg}
-          isLiffReady={isLiffReady}
-          liffError={liffError}
+          isLiffReady={isReady}
+          isLoggedIn={isLoggedIn}
+          liffError={error}
           onShare={handleShare}
         />
       )}
     </div>
   );
-};
+}

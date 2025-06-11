@@ -2,12 +2,17 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import liff from "@line/liff";
 
-interface LiffShareState {
+// LIFF 狀態接口
+interface LiffState {
   isReady: boolean;
   isLoading: boolean;
+  isLoggedIn: boolean;
   error: string | null;
+  userId: string | null;
+  profile: unknown | null;
 }
 
+// 分享選項接口
 interface ShareOptions {
   imageUrl: string;
   isMultiple?: boolean;
@@ -16,29 +21,55 @@ interface ShareOptions {
   redirectPath?: string;
 }
 
-export const useLiffShare = () => {
+// 主要的 LIFF Hook - 只在需要的頁面使用
+export const useLiff = () => {
   const router = useRouter();
-  const [state, setState] = useState<LiffShareState>({
+  const [state, setState] = useState<LiffState>({
     isReady: false,
     isLoading: true,
+    isLoggedIn: false,
     error: null,
+    userId: null,
+    profile: null,
   });
 
+  // 初始化 LIFF
   const initLiff = useCallback(async () => {
     try {
       setState(prev => ({ ...prev, isLoading: true, error: null }));
       
+      // 初始化 LIFF
       await liff.init({
         liffId: process.env.NEXT_PUBLIC_LIFF_ID || ''
       });
+
+      // 檢查登入狀態
+      const isLoggedIn = liff.isLoggedIn();
       
-      setState(prev => ({ 
-        ...prev, 
-        isReady: true, 
-        isLoading: false 
-      }));
+      if (isLoggedIn) {
+        // 獲取用戶資料
+        const profile = await liff.getProfile();
+        
+        setState(prev => ({ 
+          ...prev, 
+          isReady: true, 
+          isLoading: false,
+          isLoggedIn: true,
+          userId: profile.userId,
+          profile: profile
+        }));
+      } else {
+        setState(prev => ({ 
+          ...prev, 
+          isReady: true, 
+          isLoading: false,
+          isLoggedIn: false
+        }));
+      }
+      
     } catch (error) {
       const errorMessage = `LIFF init failed: ${error}`;
+      console.error(errorMessage);
       setState(prev => ({ 
         ...prev, 
         isReady: false, 
@@ -47,6 +78,13 @@ export const useLiffShare = () => {
       }));
     }
   }, []);
+
+  // 手動觸發登入
+  const login = useCallback(() => {
+    if (state.isReady && !state.isLoggedIn) {
+      liff.login();
+    }
+  }, [state.isReady, state.isLoggedIn]);
 
   // 分享圖片到 LINE
   const shareImage = useCallback(async (options: ShareOptions) => {
@@ -60,10 +98,10 @@ export const useLiffShare = () => {
 
     try {
       if (!state.isReady) {
-        await initLiff();
+        throw new Error('LIFF is not ready');
       }
 
-      if (!liff.isLoggedIn()) {
+      if (!state.isLoggedIn) {
         liff.login();
         return;
       }
@@ -88,7 +126,9 @@ export const useLiffShare = () => {
 
       if (result) {
         onSuccess?.();
-        router.push(redirectPath);
+        if (redirectPath) {
+          router.push(redirectPath);
+        }
       } else {
         console.log('TargetPicker was closed by user');
       }
@@ -97,18 +137,7 @@ export const useLiffShare = () => {
       console.error(errorMessage);
       onError?.(errorMessage);
     }
-  }, [state.isReady, initLiff, router]);
-
-
-  const checkLoginStatus = useCallback(() => {
-    return state.isReady ? liff.isLoggedIn() : false;
-  }, [state.isReady]);
-
-  const login = useCallback(() => {
-    if (state.isReady) {
-      liff.login();
-    }
-  }, [state.isReady]);
+  }, [state.isReady, state.isLoggedIn, router]);
 
   const logout = useCallback(() => {
     if (state.isReady) {
@@ -116,75 +145,31 @@ export const useLiffShare = () => {
     }
   }, [state.isReady]);
 
-
+  // 只在組件掛載時初始化，不自動登入
   useEffect(() => {
     initLiff();
   }, [initLiff]);
 
   return {
-
-    isReady: state.isReady,
-    isLoading: state.isLoading,
-    error: state.error,
-    
+    ...state,
     shareImage,
-    checkLoginStatus,
     login,
     logout,
     initLiff,
   };
 };
 
-export const shareLiffImage = async (options: ShareOptions) => {
-  const { 
-    imageUrl, 
-    isMultiple = true, 
-    onSuccess, 
-    onError, 
-    redirectPath = '/result' 
-  } = options;
-
-  try {
-    if (!liff.isInClient() && !liff.isLoggedIn()) {
-      await liff.init({
-        liffId: process.env.NEXT_PUBLIC_LIFF_ID || ''
-      });
-    }
-
-    if (!liff.isLoggedIn()) {
-      liff.login();
-      return;
-    }
-
-
-    if (!liff.isApiAvailable('shareTargetPicker')) {
-      throw new Error('shareTargetPicker API is not available');
-    }
-
-    const result = await liff.shareTargetPicker(
-      [
-        {
-          type: "image",
-          originalContentUrl: imageUrl,
-          previewImageUrl: imageUrl,
-        },
-      ],
-      {
-        isMultiple,
-      }
-    );
-
-    if (result) {
-      onSuccess?.();
-      if (typeof window !== 'undefined' && redirectPath) {
-        window.location.href = redirectPath;
-      }
-    } else {
-      console.log('TargetPicker was closed by user');
-    }
-  } catch (error) {
-    const errorMessage = `Share failed: ${error}`;
-    console.error(errorMessage);
-    onError?.(errorMessage);
-  }
+// 舊版本兼容性 Hook
+export const useLiffShare = () => {
+  const liffData = useLiff();
+  
+  return {
+    isReady: liffData.isReady,
+    isLoading: liffData.isLoading,
+    error: liffData.error,
+    shareImage: liffData.shareImage,
+    checkLoginStatus: () => liffData.isLoggedIn,
+    login: liffData.login,
+    logout: liffData.logout,
+  };
 };

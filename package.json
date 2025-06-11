@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@line/liff": "^2.26.1",
+    "@prisma/client": "^6.9.0",
     "konva": "^9.3.20",
     "next": "15.3.3",
     "react": "^19.0.0",
@@ -25,6 +26,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
+    "prisma": "^6.9.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

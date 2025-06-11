@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import CanvasEditor from './CanvasEditor';
+import dynamic from 'next/dynamic';
 import ShareView from './ShareView';
 import { useLiffShare } from '../../hooks/useLiffShare';
 
@@ -8,7 +8,10 @@ interface CurrentImg {
   url: string;
 }
 
-const CardMaker: React.FC = () => {
+const CanvasEditor = dynamic(() => import('./CanvasEditor'), { ssr: false });
+
+
+export default function CardMaker () {
   // 使用 LIFF 分享 hook
   const { shareImage, isReady: isLiffReady, error: liffError } = useLiffShare();
   
@@ -58,5 +61,3 @@ const CardMaker: React.FC = () => {
     </div>
   );
 };
-
-export default CardMaker;

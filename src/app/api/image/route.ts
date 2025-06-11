@@ -103,11 +103,11 @@ export async function POST(request: NextRequest) {
     const url = await uploadHandler(image);
 
     return NextResponse.json({ success: true, url });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('圖片上傳錯誤:', error);
     return NextResponse.json({ 
       success: false, 
-      error: error.message || '上傳失敗' 
+      error: error instanceof Error ? error.message : '上傳失敗' 
     }, { status: 500 });
   }
 }

@@ -2,8 +2,9 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { scrollGame } from '../../../configs/configs';
-import { drawPixelBar, drawIcons } from '../../../utils/drawUtils';
+import { scrollGame } from '../../configs/configs';
+import { drawPixelBar, drawIcons } from '../../utils/drawUtils';
+import { navigateToScrollGameResult } from '../../utils/navUtils';
 
 interface Player {
   x: number;
@@ -39,7 +40,7 @@ interface GameState {
   distance: number;
 }
 
-export default function GameCanvas() {
+export default function ScrollGame() {
   const [loaded, setLoaded] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const router = useRouter();
@@ -137,10 +138,7 @@ export default function GameCanvas() {
         const elapsed = timestamp - startTimeRef.current;
 
         if (elapsed > scrollGame.gameSettings.duration * 1000) {
-          router.push('/result?' + new URLSearchParams({
-            score: JSON.stringify(gameStateRef.current.score),
-            lives: gameStateRef.current.lives.toString(),
-          }));
+          navigateToScrollGameResult(gameStateRef.current.score, gameStateRef.current.lives);
           return;
         }
 
@@ -289,10 +287,7 @@ export default function GameCanvas() {
 
   return (
     <div 
-      className={`relative flex flex-col items-center justify-center h-screen ${scrollGame.ui.background.color}`}
-      style={{
-        backgroundImage: scrollGame.ui.background.image ? `url(${scrollGame.ui.background.image})` : undefined,
-      }}
+      className={`relative flex flex-col items-center justify-center h-screen`}
     >
       {!loaded && (
         <div className={loadingContainerStyles}>

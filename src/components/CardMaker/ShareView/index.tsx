@@ -4,18 +4,21 @@ import { CanvaEdit } from '../../../configs/configs';
 // 樣式
 const SHARE_STYLES = {
   BUTTON: {
-    PRIMARY: `p-5 text-2xl bg-[${CanvaEdit.colors.primary.yellow}] text-blue-900 rounded-xl shadow-md font-extrabold border-4 border-blue-800`,
+    PRIMARY: `p-5 text-2xl bg-[${CanvaEdit.color.submitButtonBg}] text-[${CanvaEdit.color.submitButtonText}] rounded-xl shadow-md font-extrabold border-4 border-[${CanvaEdit.color.submitButtonBorder}]`,
     DISABLED: `disabled:bg-blue-300`,
   },
   TEXT: {
     TITLE: `text-xl text-blue-800 font-bold text-center`,
     TIP: `text-sm text-red-600 font-bold text-center w-screen`,
+    LOADING: `text-4xl font-bold text-blue-800`,
+    HINT: `text-[${CanvaEdit.color.hintText}]`,
   },
   LAYOUT: {
     CONTAINER: `container flex-col w-screen justify-center items-center`,
     CENTER: `flex justify-center items-center`,
   }
-} as const;
+};
+
 
 interface ShareViewProps {
   imageData: {
@@ -37,7 +40,7 @@ const ShareView: React.FC<ShareViewProps> = ({
     <div className={SHARE_STYLES.LAYOUT.CONTAINER}>
       {/* 標題圖片 */}
       <div className={`w-screen ${SHARE_STYLES.LAYOUT.CENTER} mt-5`}>
-        <img src={CanvaEdit.resources.images.title} className='w-4/5' alt="Title" />
+        <img src={CanvaEdit.resources.images.shareTitle} className='w-4/5' alt="Title" />
       </div>
       
       {/* 恭喜文字 */}
@@ -72,10 +75,6 @@ const ShareView: React.FC<ShareViewProps> = ({
           <p>{CanvaEdit.texts.share.loading}</p>
         )}
 
-        {/* Logo */}
-        <div className={`w-screen ${SHARE_STYLES.LAYOUT.CENTER} mb-10`}>
-          <img src={CanvaEdit.resources.images.logo} className='w-[200px] mt-10' alt="Logo" />
-        </div>
       </div>
       
       {/* 錯誤訊息 */}

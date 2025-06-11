@@ -1,3 +1,72 @@
+export const BASE_CONFIG = {
+  bg: '/assets/bg-mtd.webp',
+  couponMessage:'9折優惠碼，可用於所有商品:',
+  couponCode: 'GOODMOTHERSDAY2025',
+  shopUrl: 'https://goodmoods.store/shop/',
+  start: {
+    startImage: '/assets/start.webp',
+  },
+  result: {
+    success1: '/assets/successCard1.webp',
+    success2: '/assets/successCard2.webp',
+    fail: '/assets/failCard.webp',
+  }
+}
+
+export const COLOR_SCHEME = {
+  background: '#FCB1B2',
+  text: '#991B1B',
+  buttonBg: '#F87171',
+  buttonText: '#FFFFFF',
+  buttonDisabled: '#99A1AF',
+  buttonSecondary: '#FD9A00',
+}
+
+// 轉盤配置物件
+export const SpinWheel = {
+  config: {
+    diameter: "80vw", // 螢幕寬度的80%
+    maxDiameter: "500px", // 最大直徑限制
+    animation: {
+      duration: 5000, // 旋轉持續時間（毫秒）
+      easingClass: "ease-in-out"
+    },
+    button: {
+      size: "w-20 h-20", // 按鈕大小
+      fontSize: "text-sm font-bold"
+    }
+  },
+  color:{
+    centerBg: "#FF0000",
+    centerText: "#FFFFFF",
+    centerBorder: "#800010",
+    wheelBg: "#800010",
+    wheelBorder1: "#111111",
+    wheelBorder2: "#333333",
+    wheelBorder3: "#000000",
+    itemBg: "#FFFFFF",
+    itemText: "#FFFFFF",
+    itemBg2: "#B8005C",
+    itemText2: "#B8005C",
+  },
+  prizes: [ //weight為獎品權重，滿分為100
+    { name: "聖誕限定禮盒", code: "bpmcmgmbp2023", weight: 3 },
+    { name: "折扣券5元", code: "mcgmcps012023", weight: 15 },
+    { name: "折扣券10元", code: "mcgmcpb012023", weight: 16 },
+    { name: "折扣券540元", code: "mcgmcps012023", weight: 15 },
+    { name: "折扣券590元", code: "mcgmcpg012023", weight: 5 },
+    { name: "折扣券250元", code: "mcgmcps012023", weight: 15 },
+    { name: "折扣券10240元", code: "mcgmcpb012023", weight: 16 },
+    { name: "折扣券510元", code: "mcgmcps012023", weight: 15 },
+  ],
+  
+  texts: {
+    spinButton: "點我開始",
+    spinning: "旋轉中",
+  }
+};
+
+//卷軸遊戲
 export const scrollGame = {
   // 游戏基础设置
   gameSettings: {
@@ -175,19 +244,29 @@ export const scrollGame = {
   }
 };
 
+
+//卡片製作
 export const CanvaEdit = {
   resources: {
     images: {
-      title: '/assets2/title.png',
-      logo: '/assets2/logo.png',
+      shareTitle: '/assets2/title.png',
       cards: {
         card1: '/assets2/card1.png',
         card2: '/assets2/card2.png',
         card3: '/assets2/card3.png',
       }
     }
-  } as const,
-
+  },
+  color:{
+    text: '#000000',
+    hintText: '#999999',
+    shareButtonBg: '#800010',
+    shareButtonBorder: '#800010',
+    shareButtonText: '#FFFFFF',
+    submitButtonBg: '#800010',
+    submitButtonBorder: '#800010',
+    submitButtonText: '#FFFFFF',
+  },
   colors: {
     primary: {
       blue800: '#1e40af',
@@ -201,7 +280,7 @@ export const CanvaEdit = {
     text: {
       default: '#000000',
     }
-  } as const,
+  },
 
   texts: {
     canva: {
@@ -210,8 +289,8 @@ export const CanvaEdit = {
       stepTwo: '第二步.寫下您的祝福',
       colorSelector: '選擇文字顏色',
       buttonText: '我做好了，去分享！',
-      placeholder: 'Enter text',
-      writeOnCard: '寫上卡片',
+      placeholder: '輸入您的祝福',
+      writeOnCard: '輸入',
       loading: '正在生成卡片...',
     },
     share: {
@@ -220,7 +299,7 @@ export const CanvaEdit = {
       sendButton: '發送卡片！',
       loading: '...',
     }
-  } as const,
+  },
 
   config: {
     canvas: {
@@ -232,22 +311,14 @@ export const CanvaEdit = {
       maxLength: 100,
       defaultPosition: { x: 100, y: 100, fontSize: 30 },
     },
-    imgur: {
-      apiUrl: 'https://api.imgur.com/3/image',
-      bearerToken: '18aacec6155e973f807e9d85dd64ae7bb81343b5',
-      uploadConfig: {
-        type: 'base64',
-        title: 'Simple upload',
-        description: 'This is a simple image upload in Imgur',
-      }
-    },
     transformer: {
       borderStrokeWidth: 2,
       enabledAnchors: ['top-left', 'top-right', 'bottom-left', 'bottom-right'],
     }
-  } as const
+  }
 };
 
+//圖片上傳
 export const imageConfig = {
   // 當前使用的服務
   currentService: 'imagebb' as 'imgur' | 'imagebb' | 'cloudinary' | 'github',
@@ -276,7 +347,8 @@ export const imageConfig = {
   }
 };
 
-// 为了向后兼容，保留原有的导出（如果其他地方还在使用）
+
+// 保留
 export const MAX_LIVES = scrollGame.gameSettings.maxLives;
 export const GAME_DURATION = scrollGame.gameSettings.duration;
 export const BAR = {
@@ -297,25 +369,3 @@ export const IMAGE_PATHS = {
   life: scrollGame.assets.ui.life,
   goal: scrollGame.assets.ui.goal,
 };
-export const BASE_CONFIG = {
-  bg: '/assets/bg-mtd.webp',
-  couponCode: 'GOODMOTHERSDAY2025',
-  shopUrl: 'https://goodmoods.store/shop/',
-  start: {
-    startImage: '/assets/start.webp',
-  },
-  result: {
-    success1: '/assets/successCard1.webp',
-    success2: '/assets/successCard2.webp',
-    fail: '/assets/failCard.webp',
-  }
-}
-
-export const COLOR_SCHEME = {
-  background: '#FCB1B2',
-  text: '#991B1B',
-  buttonBg: '#F87171',
-  buttonText: '#FFFFFF',
-  buttonDisabled: '#99A1AF',
-  buttonSecondary: '#FD9A00',
-}

@@ -1,24 +1,22 @@
-import { findUserTempByUserId } from '@/utils/prisma_db' // 請根據實際路徑調整
+import { NextRequest, NextResponse } from 'next/server'
+import { findUserTempByUserId } from '@/utils/prisma_db'
 
 export async function GET(
-  request: Request,
-  { params }: { params: { userId: string } }
+  req: NextRequest,
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
-    const { userId } = params
-    
+    const { userId } =await params
+
     if (!userId) {
-      return Response.json({ error: 'userId is required' }, { status: 400 })
+      return NextResponse.json({ error: 'userId is required' }, { status: 400 })
     }
-    
+
     const userTemp = await findUserTempByUserId(userId)
-    
-    return Response.json({ 
-      exists: !!userTemp,
-      data: userTemp 
-    })
+
+    return NextResponse.json({ exists: !!userTemp, data: userTemp }, { status: 200 })
   } catch (error) {
-    console.error('Find user temp API error:', error)
-    return Response.json({ error: 'Server error' }, { status: 500 })
+    console.error('Error in GET /users/[userId]:', error)
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
   }
 }

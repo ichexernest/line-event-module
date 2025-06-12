@@ -1,10 +1,10 @@
-import { getGameConfig, switchGameMode, toggleGameEnabled, togglePlayOnce } from '@/utils/prisma_db'
+import { getGameConfig, switchGameMode, toggleGameEnabled, togglePlayOnce, clearAllUserData } from '@/utils/prisma_db'
 import { revalidatePath } from 'next/cache'
-import {  NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
 export async function GET() {
   try {
-        console.log(`in admin game config`)
+    console.log(`in admin game config`)
     const config = await getGameConfig()
     console.log(config)
     return NextResponse.json(config)
@@ -30,11 +30,12 @@ export async function POST(request: Request) {
       result = await toggleGameEnabled(enabled, userAgent)
     } else if (action === 'toggle_play_once' && typeof onlyPlayOnce === 'boolean') {
       result = await togglePlayOnce(onlyPlayOnce, userAgent)
+    } else if (action === 'clear_all_user_data') {
+      result = await clearAllUserData(userAgent)
     } else {
       return Response.json({ error: 'Invalid action' }, { status: 400 })
     }
     
-    // 重新驗證相關頁面
     revalidatePath('/start')
     revalidatePath('/playing')
     revalidatePath('/result')

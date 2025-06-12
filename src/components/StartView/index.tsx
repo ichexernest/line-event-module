@@ -49,7 +49,7 @@ export default function StartView() {
   const fetchGameConfig = async () => {
     try {
       setIsLoadingConfig(true)
-      const response = await fetch('/api/game-config')
+      const response = await fetch('/api/admin/game-config')
       if (!response.ok) {
         throw new Error(`獲取遊戲設置失敗: ${response.status}`)
       }

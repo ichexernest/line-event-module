@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 
 interface GameConfig {
     currentMode: string
-    onlyPlayOnce: boolean   
+    onlyPlayOnce: boolean
     isEnabled: boolean
 }
 
@@ -106,6 +106,32 @@ export default function AdminPanel({ onAuthChange }: AdminPanelProps) {
         }
     }
 
+    const clearAllUserData = async () => {
+        if (!confirm('確定要清除所有用戶資料嗎？此操作無法復原！')) {
+            return
+        }
+
+        try {
+            const response = await fetch('/api/admin/game-config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'clear_all_user_data'
+                })
+            })
+
+            if (response.ok) {
+                alert('所有用戶資料已清除')
+                await fetchLogs() // 重新載入日誌
+            } else {
+                alert('清除失敗')
+            }
+        } catch (error) {
+            console.error('Failed to clear user data:', error)
+            alert('清除失敗')
+        }
+    }
+
     const toggleGameEnabled = async () => {
         if (!config) return
 
@@ -128,7 +154,7 @@ export default function AdminPanel({ onAuthChange }: AdminPanelProps) {
         }
     }
 
-        const togglePlayOnce = async () => {
+    const togglePlayOnce = async () => {
         if (!config) return
 
         try {
@@ -219,8 +245,8 @@ export default function AdminPanel({ onAuthChange }: AdminPanelProps) {
                                         <div className="flex justify-between items-center">
                                             <span className="text-gray-700">模式:</span>
                                             <span className={`px-3 py-1 rounded-full text-sm font-medium ${config.currentMode === 'cardMaker' || config.currentMode === 'scrollGame' || config.currentMode === 'spinWheel'
-                                                    ? 'bg-gray-200 text-gray-800'
-                                                    : ''
+                                                ? 'bg-gray-200 text-gray-800'
+                                                : ''
                                                 }`}>
                                                 {{
                                                     cardMaker: '卡片製作',
@@ -232,8 +258,8 @@ export default function AdminPanel({ onAuthChange }: AdminPanelProps) {
                                         <div className="flex justify-between items-center">
                                             <span className="text-gray-700">狀態:</span>
                                             <span className={`px-3 py-1 rounded-full text-sm font-medium ${config.isEnabled
-                                                    ? 'bg-green-100 text-green-800 border border-green-200'
-                                                    : 'bg-red-100 text-red-800 border border-red-200'
+                                                ? 'bg-green-100 text-green-800 border border-green-200'
+                                                : 'bg-red-100 text-red-800 border border-red-200'
                                                 }`}>
                                                 {config.isEnabled ? '開啟' : '關閉'}
                                             </span>
@@ -241,8 +267,8 @@ export default function AdminPanel({ onAuthChange }: AdminPanelProps) {
                                         <div className="flex justify-between items-center">
                                             <span className="text-gray-700">遊戲次數:</span>
                                             <span className={`px-3 py-1 rounded-full text-sm font-medium ${config.onlyPlayOnce
-                                                    ? 'bg-green-100 text-green-800 border border-green-200'
-                                                    : 'bg-red-100 text-red-800 border border-red-200'
+                                                ? 'bg-green-100 text-green-800 border border-green-200'
+                                                : 'bg-red-100 text-red-800 border border-red-200'
                                                 }`}>
                                                 {config.onlyPlayOnce ? '僅一次' : '可多次'}
                                             </span>
@@ -259,8 +285,8 @@ export default function AdminPanel({ onAuthChange }: AdminPanelProps) {
                                         onClick={() => switchGameMode('cardMaker')}
                                         disabled={config.currentMode === 'cardMaker'}
                                         className={`py-3 px-4 font-medium rounded-md transition-colors duration-200 ${config.currentMode === 'cardMaker'
-                                                ? 'bg-green-400 text-gray-200 cursor-not-allowed'
-                                                : 'bg-gray-500 hover:bg-gray-600 text-white'
+                                            ? 'bg-green-400 text-gray-200 cursor-not-allowed'
+                                            : 'bg-gray-500 hover:bg-gray-600 text-white'
                                             }`}
                                     >
                                         卡片製作
@@ -269,8 +295,8 @@ export default function AdminPanel({ onAuthChange }: AdminPanelProps) {
                                         onClick={() => switchGameMode('scrollGame')}
                                         disabled={config.currentMode === 'scrollGame'}
                                         className={`py-3 px-4 font-medium rounded-md transition-colors duration-200 ${config.currentMode === 'scrollGame'
-                                                ? 'bg-green-400 text-gray-200 cursor-not-allowed'
-                                                : 'bg-gray-500 hover:bg-gray-600 text-white'
+                                            ? 'bg-green-400 text-gray-200 cursor-not-allowed'
+                                            : 'bg-gray-500 hover:bg-gray-600 text-white'
                                             }`}
                                     >
                                         滾動遊戲
@@ -279,8 +305,8 @@ export default function AdminPanel({ onAuthChange }: AdminPanelProps) {
                                         onClick={() => switchGameMode('spinWheel')}
                                         disabled={config.currentMode === 'spinWheel'}
                                         className={`py-3 px-4 font-medium rounded-md transition-colors duration-200 ${config.currentMode === 'spinWheel'
-                                                ? 'bg-green-400 text-gray-200 cursor-not-allowed'
-                                                : 'bg-gray-500 hover:bg-gray-600 text-white'
+                                            ? 'bg-green-400 text-gray-200 cursor-not-allowed'
+                                            : 'bg-gray-500 hover:bg-gray-600 text-white'
                                             }`}
                                     >
                                         輪盤遊戲
@@ -294,13 +320,20 @@ export default function AdminPanel({ onAuthChange }: AdminPanelProps) {
                                 <button
                                     onClick={toggleGameEnabled}
                                     className={`w-full py-3 px-4 font-medium rounded-md transition-colors duration-200 ${config.isEnabled
-                                            ? 'bg-red-600 hover:bg-red-700 text-white'
-                                            : 'bg-green-600 hover:bg-green-700 text-white'
+                                        ? 'bg-red-600 hover:bg-red-700 text-white'
+                                        : 'bg-green-600 hover:bg-green-700 text-white'
                                         }`}
                                 >
                                     {config.isEnabled ? '關閉遊戲' : '開啟遊戲'}
                                 </button>
                             </div>
+
+                            <button
+                                onClick={clearAllUserData}
+                                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded"
+                            >
+                                手動清除所有用戶資料
+                            </button>
 
                             {/* 遊戲次數 */}
                             <div>
@@ -308,8 +341,8 @@ export default function AdminPanel({ onAuthChange }: AdminPanelProps) {
                                 <button
                                     onClick={togglePlayOnce}
                                     className={`w-full py-3 px-4 font-medium rounded-md transition-colors duration-200 ${config.onlyPlayOnce
-                                            ? 'bg-red-600 hover:bg-red-700 text-white'
-                                            : 'bg-green-600 hover:bg-green-700 text-white'
+                                        ? 'bg-red-600 hover:bg-red-700 text-white'
+                                        : 'bg-green-600 hover:bg-green-700 text-white'
                                         }`}
                                 >
                                     {config.onlyPlayOnce ? '只能一次' : '允許重複'}

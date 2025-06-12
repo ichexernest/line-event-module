@@ -46,7 +46,6 @@ export async function switchGameMode(newMode: string, userAgent?: string) {
 export async function toggleGameEnabled(enabled: boolean, userAgent?: string) {
   const currentConfig = await getGameConfig()
   
-  // 記錄啟閉日誌
   await prisma.gameLog.create({
     data: {
       action: enabled ? 'enable_game' : 'disable_game',
@@ -56,7 +55,9 @@ export async function toggleGameEnabled(enabled: boolean, userAgent?: string) {
     }
   })
   
-  // 更新配置
+  // 當遊戲啟閉時清除所有用戶資料
+  await clearAllUserData(userAgent)
+  
   const updatedConfig = await prisma.gameConfig.update({
     where: { id: currentConfig.id },
     data: { isEnabled: enabled }
@@ -112,3 +113,33 @@ export async function createUserTemp (userId: string, userContent: string) {
     },
   });
 };
+
+export async function clearUserData(userId: string, userAgent?: string) {
+  await prisma.gameLog.create({
+    data: {
+      action: 'clear_user_data',
+      fromValue: userId,
+      toValue: 'cleared',
+      userAgent
+    }
+  })
+
+  return await prisma.userTemp.deleteMany({
+    where: { userId }
+  })
+}
+
+export async function clearAllUserData(userAgent?: string) {
+  const userCount = await prisma.userTemp.count()
+  
+  await prisma.gameLog.create({
+    data: {
+      action: 'clear_all_user_data',
+      fromValue: `${userCount} users`,
+      toValue: 'all cleared',
+      userAgent
+    }
+  })
+  
+  return await prisma.userTemp.deleteMany({})
+}

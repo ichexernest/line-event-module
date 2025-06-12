@@ -14,7 +14,6 @@ interface GameConfig {
   updatedAt?: string
 }
 
-// 導航函數
 export const navigateToScrollGameResult = (score: unknown, lives: number) => {
   const params = new URLSearchParams({
     score: JSON.stringify(score),
@@ -28,11 +27,11 @@ export const navigateToCardMakerResult = () => {
   window.location.href = '/result'
 }
 
-export const navigateToSpinWheelResult = (prize?: string, prizeCoupon?: string) => {
+export const navigateToSpinWheelResult = (prize?: string, prizeCode?: string) => {
   const params = new URLSearchParams()
   
   if (prize) params.set('prize', prize)
-  if (prizeCoupon) params.set('prizeCoupon', prizeCoupon)
+  if (prizeCode) params.set('prizeCode', prizeCode)
   
   const queryString = params.toString()
   window.location.href = `/result${queryString ? '?' + queryString : ''}`
@@ -55,6 +54,7 @@ export default function StartView() {
         throw new Error(`獲取遊戲設置失敗: ${response.status}`)
       }
       const config = await response.json()
+      alert(`遊戲設定抓到 onlyPlayOnce=${config.onlyPlayOnce}`)
       setGameConfig(config)
     } catch (error) {
       console.error('獲取遊戲設置失敗:', error)

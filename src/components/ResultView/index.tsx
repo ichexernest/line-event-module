@@ -160,10 +160,10 @@ const GAME_MODE_CONFIGS: Record<string, GameModeConfig> = {
     
     getCouponContent: (searchParams) => {
       const prize = searchParams.get('prize') || ''
-      const coupon = searchParams.get('coupon') || ''
+      const prizeCode = searchParams.get('prizeCode') || ''
       return {
         message: `恭喜獲得 ${prize}`,
-        code: coupon
+        code: prizeCode
       }
     },
     

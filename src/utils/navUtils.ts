@@ -12,11 +12,11 @@ export const navigateToCardMakerResult = () => {
   window.location.href = '/result'
 }
 
-export const navigateToSpinWheelResult = (prize?: string, prizeCoupon?: string) => {
+export const navigateToSpinWheelResult = (prize?: string, prizeCode?: string) => {
   const params = new URLSearchParams()
   
   if (prize) params.set('prize', prize)
-  if (prizeCoupon) params.set('prizeCoupon', prizeCoupon)
+  if (prizeCode) params.set('prizeCode', prizeCode)
   
   const queryString = params.toString()
   window.location.href = `/result${queryString ? '?' + queryString : ''}`

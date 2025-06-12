@@ -81,7 +81,7 @@ export default function AdminPanel({ onAuthChange }: AdminPanelProps) {
 
     const fetchLogs = async () => {
         try {
-            const response = await fetch('/api/admin/logs?limit=20')
+            const response = await fetch('/api/admin/game-logs?limit=20')
             const data = await response.json()
             setLogs(data)
         } catch (error) {

@@ -1,13 +1,16 @@
 import { getGameConfig, switchGameMode, toggleGameEnabled, togglePlayOnce } from '@/utils/prisma_db'
 import { revalidatePath } from 'next/cache'
+import {  NextResponse } from 'next/server'
 
 export async function GET() {
   try {
+        console.log(`in admin game config`)
     const config = await getGameConfig()
-    return Response.json(config)
+    console.log(config)
+    return NextResponse.json(config)
   } catch (error) {
     console.error('Failed to get config:', error)
-    return Response.json({ error: 'Failed to get config' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to get config' }, { status: 500 })
   }
 }
 

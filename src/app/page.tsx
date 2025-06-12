@@ -4,7 +4,6 @@ import { BASE_CONFIG, COLOR_SCHEME } from '@/configs/configs'
 
 export default async function HomePage() {
   const config = await getGameConfig()
-
   if (config.isEnabled) {
     redirect('/start') 
   }

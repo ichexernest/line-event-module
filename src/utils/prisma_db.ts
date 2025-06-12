@@ -6,7 +6,7 @@ export async function getGameConfig() {
   let config = await prisma.gameConfig.findFirst({
     orderBy: { createdAt: 'desc' }
   })
-  
+
   // 如果沒有配置，創建預設配置
   if (!config) {
     config = await prisma.gameConfig.create({

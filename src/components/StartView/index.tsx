@@ -74,7 +74,7 @@ export default function StartView() {
     
     switch (gameMode) {
       case 'spinWheel':
-        navigateToSpinWheelResult(userContent.prize, userContent.code)
+        navigateToSpinWheelResult(userContent.prize, userContent.prizeCode)
         break
       case 'cardMaker':
         navigateToCardMakerResult()

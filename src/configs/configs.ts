@@ -23,7 +23,7 @@ export const COLOR_SCHEME = {
 }
 
 // 轉盤配置物件
-export const SpinWheel = {
+export const spinWheel = {
   config: {
     diameter: "80vw", // 螢幕寬度的80%
     maxDiameter: "500px", // 最大直徑限制
@@ -68,18 +68,15 @@ export const SpinWheel = {
 
 //卷軸遊戲
 export const scrollGame = {
-  // 游戏基础设置
   gameSettings: {
-    duration: 45, // 游戏时长（秒）
+    duration: 45, // 時長
     maxLives: 5, // 最大生命值
-    groundY: 500, // 地面Y坐标
+    groundY: 500, // 地面高度座標
     canvasSize: {
       width: 350,
       height: 550
     }
   },
-
-  // 玩家设置
   player: {
     size: {
       width: 50,
@@ -91,12 +88,11 @@ export const scrollGame = {
     },
     physics: {
       gravity: 0.1, // 重力加速度
-      jumpPower: -7, // 跳跃力度（负值向上）
-      moveSpeed: 0 // 玩家水平移动速度（当前为0，固定位置）
+      jumpPower: -7, // 跳躍力（負值向上）
+      moveSpeed: 0 // 水平移動速度
     }
   },
 
-  // 障碍物设置
   obstacles: {
     types: ['prop1', 'prop2', 'prop3'],
     size: {
@@ -104,13 +100,12 @@ export const scrollGame = {
       height: 40
     },
     spawnSettings: {
-      interval: 400, // 每400帧生成一个障碍物
-      yPosition: 500, // 障碍物Y坐标
-      speed: 1.5 // 障碍物移动速度
+      interval: 400, // 障礙物間隔
+      yPosition: 500, // 高度座標
+      speed: 1.5 // 移動速度
     }
   },
 
-  // 道具设置
   items: {
     types: ['prop1', 'prop2', 'prop3', 'prop4', 'prop5'],
     size: {
@@ -118,44 +113,38 @@ export const scrollGame = {
       height: 50
     },
     spawnSettings: {
-      interval: 50, // 每50帧检查是否生成道具
-      avoidInterval: 150, // 每150帧不生成道具（避免与障碍物冲突）
+      interval: 50, // 道具生成間隔
+      avoidInterval: 150, // 防障礙物衝突
       yRange: {
-        base: 450, // 基础Y坐标
-        variation: 150 // Y坐标随机变化范围
+        base: 450,
+        variation: 150 //高度範圍
       },
-      speed: 1.5 // 道具移动速度
+      speed: 1.5 
     }
   },
-
-  // UI界面设置
   ui: {
-    // 进度条设置
     bars: {
       width: 250,
       height: 20,
       lives: {
         x: 10,
         y: 60,
-        colors: ['#FF6D45', '#FF7E5A', '#FB977B'] // 生命值进度条颜色渐变
+        colors: ['#FF6D45', '#FF7E5A', '#FB977B'] // 生命進度條
       },
       time: {
         x: 10,
         y: 90,
-        colors: ['#FB8F13', '#FF9822', '#FFA43D'] // 时间进度条颜色渐变
+        colors: ['#FB8F13', '#FF9822', '#FFA43D'] // 時間進度條
       }
     },
-    
-    // 图标设置
     icons: {
       size: 35,
       margin: 10,
       top: 10
     },
 
-    // 跳跃按钮样式
     jumpButton: {
-      text: '跳起来!',
+      text: '跳起來!',
       styles: {
         padding: 'p-6',
         marginTop: 'mt-5',
@@ -169,8 +158,6 @@ export const scrollGame = {
         active: 'active:bg-rose-500'
       }
     },
-
-    // 画布样式
     canvas: {
       styles: {
         marginTop: 'mt-3',
@@ -180,13 +167,10 @@ export const scrollGame = {
       }
     },
 
-    // 背景设置
     background: {
       color: 'bg-[#FCB1B2]',
-      image: '/assets/bg.webp' // 如果有背景图片
+      image: '/assets/bg.webp'
     },
-
-    // 加载界面设置
     loading: {
       title: '載入中請稍後...!',
       subtitle: '若等候時間過久，請嘗試切換其他網路遊玩',
@@ -198,27 +182,22 @@ export const scrollGame = {
     }
   },
 
-  // 游戏平衡性设置
   balance: {
-    // 碰撞检测设置
     collision: {
       enabled: true,
-      tolerance: 0 // 碰撞容错像素（可以让游戏更宽松）
+      tolerance: 0 
     },
 
-    // 难度递增设置
     difficulty: {
-      enabled: false, // 是否启用难度递增
+      enabled: false, // 是否啟用難度增加機制
       speedIncrease: {
-        interval: 10, // 每10秒增加难度
-        obstacleSpeedBonus: 0.1, // 障碍物速度增加量
+        interval: 10, // 每10秒增加
+        obstacleSpeedBonus: 0.1, // 障礙物速度增加量
         itemSpeedBonus: 0.1, // 道具速度增加量
-        spawnRateBonus: 0.9 // 生成频率倍数（小于1表示更频繁）
+        spawnRateBonus: 0.9 // 生成速率（<1表示更頻繁）
       }
     }
   },
-
-  // 图片资源路径
   assets: {
     player: {
       normal: '/assets/player.webp',

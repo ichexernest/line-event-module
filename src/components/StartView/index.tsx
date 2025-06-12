@@ -1,14 +1,128 @@
 'use client'
 import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { BASE_CONFIG, COLOR_SCHEME } from '@/configs/configs'
-import { useLiff } from '@/hooks/useLiff' // 請確認正確的 hook 路徑
+import { useLiff } from '@/hooks/useLiff'
+
+
+interface GameConfig {
+  currentMode: 'cardMaker' | 'scrollGame' | 'spinWheel'
+  isEnabled: boolean
+  onlyPlayOnce: boolean
+  createdAt?: string
+  updatedAt?: string
+}
+
+// 導航函數
+export const navigateToScrollGameResult = (score: unknown, lives: number) => {
+  const params = new URLSearchParams({
+    score: JSON.stringify(score),
+    lives: lives.toString()
+  })
+  console.log(params)
+  window.location.href = `/result?${params.toString()}`
+}
+
+export const navigateToCardMakerResult = () => {
+  window.location.href = '/result'
+}
+
+export const navigateToSpinWheelResult = (prize?: string, prizeCoupon?: string) => {
+  const params = new URLSearchParams()
+  
+  if (prize) params.set('prize', prize)
+  if (prizeCoupon) params.set('prizeCoupon', prizeCoupon)
+  
+  const queryString = params.toString()
+  window.location.href = `/result${queryString ? '?' + queryString : ''}`
+}
+
 
 export default function StartView() {
   const router = useRouter()
-  const { isReady, isLoading, isLoggedIn, error, login } = useLiff()
+  const { isReady, isLoading, isLoggedIn, error, login, userId } = useLiff()
+  const [isCheckingRecord, setIsCheckingRecord] = useState(false)
+  const [isLoadingConfig, setIsLoadingConfig] = useState(false)
+  const [gameConfig, setGameConfig] = useState<GameConfig | null>(null)
   
-  const startGame = () => {
+  // 獲取遊戲設置
+  const fetchGameConfig = async () => {
+    try {
+      setIsLoadingConfig(true)
+      const response = await fetch('/api/game-config')
+      if (!response.ok) {
+        throw new Error(`獲取遊戲設置失敗: ${response.status}`)
+      }
+      const config = await response.json()
+      setGameConfig(config)
+    } catch (error) {
+      console.error('獲取遊戲設置失敗:', error)
+    } finally {
+      setIsLoadingConfig(false)
+    }
+  }
+
+  // 組件載入時獲取遊戲設置
+  useEffect(() => {
+    fetchGameConfig()
+  }, [])
+  
+  // 根據遊戲模式導航到對應結果頁
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const navigateToResult = (userContent: any) => {
+    const gameMode = gameConfig!.currentMode
+    
+    switch (gameMode) {
+      case 'spinWheel':
+        navigateToSpinWheelResult(userContent.prize, userContent.code)
+        break
+      case 'cardMaker':
+        navigateToCardMakerResult()
+        break
+      case 'scrollGame':
+        navigateToScrollGameResult(userContent.score, userContent.lives || 0)
+        break
+      default:
+        // 預設情況，直接導向結果頁
+        router.push('/result')
+        break
+    }
+  }
+  
+  // 檢查用戶記錄的函數
+  const checkUserRecord = async (userId: string) => {
+    try {
+      setIsCheckingRecord(true)
+      
+      const response = await fetch(`/api/game/users/${userId}`)
+      if (!response.ok) {
+        throw new Error(`API 請求失敗: ${response.status}`)
+      }
+      
+      const result = await response.json()
+      
+      if (result.exists && result.data) {
+        // 如果有記錄，解析內容並導航到結果頁
+        const userContent = JSON.parse(result.data.userContent)
+        console.log('找到用戶記錄:', userContent)
+        
+        // 根據遊戲模式導航到對應的結果頁
+        navigateToResult(userContent)
+        
+        return true // 表示有記錄，已導向結果頁
+      }
+      
+      return false // 沒有記錄
+    } catch (error) {
+      console.error('檢查用戶記錄失敗:', error)
+      return false // 出錯時當作沒有記錄
+    } finally {
+      setIsCheckingRecord(false)
+    }
+  }
+  
+  const startGame = async () => {
     if (!isReady) {
       console.log('LIFF is not ready yet')
       return
@@ -20,16 +134,34 @@ export default function StartView() {
       return
     }
     
-    // 已登入，直接進入遊戲
-    router.push('/playing')
+    if (!userId) {
+      console.error('userId is null')
+      return
+    }
+
+    // 檢查遊戲設置是否要求只能玩一次
+    if (gameConfig?.onlyPlayOnce) {
+      // 需要檢查用戶記錄
+      const hasRecord = await checkUserRecord(userId)
+      
+      if (!hasRecord) {
+        // 沒有記錄，進入遊戲
+        router.push('/playing')
+      }
+      // 如果有記錄，已經在 checkUserRecord 中導航到結果頁了
+    } else {
+      // 不需要檢查記錄，直接進入遊戲
+      router.push('/playing')
+    }
   }
   
-  // 如果還在載入 LIFF，顯示載入狀態
-  if (isLoading) {
+  // 如果還在載入 LIFF、遊戲設置或檢查記錄，顯示載入狀態
+  if (isLoading || isLoadingConfig || isCheckingRecord) {
     return (
       <div className="z-10 flex flex-col items-center">
         <div className="p-6 mt-3 font-bold text-2xl" style={{ color: COLOR_SCHEME.text }}>
-          載入中...
+          {isCheckingRecord ? '檢查遊戲記錄中...' : 
+           isLoadingConfig ? '載入遊戲設置中...' : '載入中...'}
         </div>
       </div>
     )
@@ -70,17 +202,10 @@ export default function StartView() {
         網路和裝置解析度有可能影響遊玩情況，敬請注意。
       </p>
       
-      {/* 顯示登入狀態提示 */}
-      {isReady && !isLoggedIn && (
-        <p className="text-sm my-2 text-center px-4"
-          style={{ color: COLOR_SCHEME.text }}>
-          請先登入 LINE 帳號以開始遊戲
-        </p>
-      )}
       
       <button 
         onClick={startGame}
-        disabled={!isReady}
+        disabled={!isReady || isCheckingRecord || isLoadingConfig}
         className="p-6 mt-3 font-bold text-3xl rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
         style={{
           backgroundColor: COLOR_SCHEME.buttonBg,
@@ -89,9 +214,13 @@ export default function StartView() {
       >
         {!isReady 
           ? '載入中...' 
-          : !isLoggedIn 
-            ? 'LINE 登入' 
-            : '開始挑戰！'
+          : isLoadingConfig
+            ? '載入設置中...'
+            : isCheckingRecord
+              ? '檢查記錄中...'
+              : !isLoggedIn 
+                ? 'LINE 登入' 
+                : '開始挑戰！'
         }
       </button>
     </div>

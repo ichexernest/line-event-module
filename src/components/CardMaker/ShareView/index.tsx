@@ -51,13 +51,13 @@ interface ShareViewProps {
   onShare: () => void;
 }
 
-const ShareView: React.FC<ShareViewProps> = ({ 
+export default function ShareView({ 
   imageData, 
   isLiffReady, 
   isLoggedIn,  // 新增的參數
   liffError, 
   onShare 
-}) => {
+}: ShareViewProps)  {
   return (
     <div className={SHARE_STYLES.LAYOUT.CONTAINER}>
       {/* 標題圖片 */}
@@ -124,5 +124,3 @@ const ShareView: React.FC<ShareViewProps> = ({
     </div>
   );
 };
-
-export default ShareView;

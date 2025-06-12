@@ -159,10 +159,10 @@ const GAME_MODE_CONFIGS: Record<string, GameModeConfig> = {
     shouldShowCoupon: () => true,
     
     getCouponContent: (searchParams) => {
-      const award = searchParams.get('award') || ''
+      const prize = searchParams.get('prize') || ''
       const coupon = searchParams.get('coupon') || ''
       return {
-        message: `恭喜獲得 ${award}`,
+        message: `恭喜獲得 ${prize}`,
         code: coupon
       }
     },
@@ -312,7 +312,6 @@ export default function ResultView({ gameMode }: ResultViewProps) {
       setCopyMessage(COPY_SUCCESS_MESSAGE)
     } catch (error) {
       console.error("複製失敗:", error)
-      alert("複製失敗 😢")
     }
   }
 

@@ -18,7 +18,7 @@ interface ShareOptions {
   isMultiple?: boolean;
   onSuccess?: () => void;
   onError?: (error: string) => void;
-  redirectPath?: string;
+  redirectPath?: string | null;
 }
 
 // 主要的 LIFF Hook - 只在需要的頁面使用

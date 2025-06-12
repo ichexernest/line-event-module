@@ -3,8 +3,6 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function POST(request: NextRequest) {
   try {
     const { password } = await request.json()
-    
-    // 從環境變數獲取管理員密碼
     const adminPassword = process.env.ADMIN_PASSWORD
     
     if (!adminPassword) {
@@ -14,8 +12,6 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
-    
-    // 直接比較明碼密碼
     const isValid = password === adminPassword
     
     if (isValid) {

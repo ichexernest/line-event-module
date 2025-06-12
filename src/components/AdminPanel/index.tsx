@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 
 interface GameConfig {
     currentMode: string
+    onlyPlayOnce: boolean   
     isEnabled: boolean
 }
 
@@ -127,6 +128,28 @@ export default function AdminPanel({ onAuthChange }: AdminPanelProps) {
         }
     }
 
+        const togglePlayOnce = async () => {
+        if (!config) return
+
+        try {
+            const response = await fetch('/api/admin/game-config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action: 'toggle_play_once',
+                    onlyPlayOnce: !config.onlyPlayOnce
+                })
+            })
+
+            if (response.ok) {
+                await fetchConfig()
+                await fetchLogs()
+            }
+        } catch (error) {
+            console.error('Failed to toggle game:', error)
+        }
+    }
+
     // 密碼輸入介面
     if (!isAuthenticated) {
         return (
@@ -215,6 +238,15 @@ export default function AdminPanel({ onAuthChange }: AdminPanelProps) {
                                                 {config.isEnabled ? '開啟' : '關閉'}
                                             </span>
                                         </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-gray-700">遊戲次數:</span>
+                                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${config.onlyPlayOnce
+                                                    ? 'bg-green-100 text-green-800 border border-green-200'
+                                                    : 'bg-red-100 text-red-800 border border-red-200'
+                                                }`}>
+                                                {config.onlyPlayOnce ? '僅一次' : '可多次'}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -267,6 +299,20 @@ export default function AdminPanel({ onAuthChange }: AdminPanelProps) {
                                         }`}
                                 >
                                     {config.isEnabled ? '關閉遊戲' : '開啟遊戲'}
+                                </button>
+                            </div>
+
+                            {/* 遊戲次數 */}
+                            <div>
+                                <h2 className="text-lg font-medium text-gray-900 mb-4">遊戲次數</h2>
+                                <button
+                                    onClick={togglePlayOnce}
+                                    className={`w-full py-3 px-4 font-medium rounded-md transition-colors duration-200 ${config.onlyPlayOnce
+                                            ? 'bg-red-600 hover:bg-red-700 text-white'
+                                            : 'bg-green-600 hover:bg-green-700 text-white'
+                                        }`}
+                                >
+                                    {config.onlyPlayOnce ? '只能一次' : '允許重複'}
                                 </button>
                             </div>
 

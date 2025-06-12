@@ -12,6 +12,7 @@ model GameConfig {
   id          Int      @id @default(autoincrement())
   currentMode String   @default("cardMaker")  
   isEnabled   Boolean  @default(true)        // 遊戲是否開啟
+  onlyPlayOnce Boolean  @default(false) //只能玩一次
   updatedAt   DateTime @updatedAt
   createdAt   DateTime @default(now())
 }

@@ -40,7 +40,7 @@ interface GameState {
   distance: number;
 }
 
-export default function ScrollGame() {
+export default function ScrollGame({ userId }: { userId: string }) {
   const [loaded, setLoaded] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const router = useRouter();
@@ -49,12 +49,12 @@ export default function ScrollGame() {
 
   // 使用配置中的数值初始化游戏状态
   const gameStateRef = useRef<GameState>({
-    player: { 
-      x: scrollGame.player.startPosition.x, 
-      y: scrollGame.player.startPosition.y, 
-      width: scrollGame.player.size.width, 
-      height: scrollGame.player.size.height, 
-      vy: 0 
+    player: {
+      x: scrollGame.player.startPosition.x,
+      y: scrollGame.player.startPosition.y,
+      width: scrollGame.player.size.width,
+      height: scrollGame.player.size.height,
+      vy: 0
     },
     obstacles: [],
     items: [],
@@ -80,11 +80,50 @@ export default function ScrollGame() {
     );
   };
 
+  const handleResultAndNavigation = async (score: unknown, lives: number) => {
+    try {
+      if (userId) {
+        const userContent = JSON.stringify({
+          type: 'scrollGame',
+          score: score,
+          lives: lives
+        });
+
+        const response = await fetch('/api/game/users', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId,
+            content: userContent
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`API 請求失敗: ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log('結果已存入資料庫:', result);
+      } else {
+        console.warn('userId 為 null，無法存入資料庫');
+      }
+
+
+      // 導航到結果頁面
+      navigateToScrollGameResult(score, lives);
+
+    } catch (error) {
+      console.error('處理結果時發生錯誤:', error);
+      navigateToScrollGameResult(score, lives);
+    }
+  };
   useEffect(() => {
     let isMounted = true;
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
@@ -101,7 +140,7 @@ export default function ScrollGame() {
 
     loadImages(allImagePaths).then((imgs) => {
       if (!isMounted) return;
-      
+
       const [playerImg, playerJumpImg, bgImg, ...restImgs] = imgs;
       const obstacleImgs = Object.fromEntries(
         scrollGame.obstacles.types.map((type, i) => [type, restImgs[i]])
@@ -110,16 +149,16 @@ export default function ScrollGame() {
         scrollGame.items.types.map((type, i) => [type, restImgs[scrollGame.obstacles.types.length + i]])
       );
 
-      const lifeImg = restImgs[scrollGame.obstacles.types.length + scrollGame.items.types.length]; 
-      const goalImg = restImgs[scrollGame.obstacles.types.length + scrollGame.items.types.length + 1]; 
+      const lifeImg = restImgs[scrollGame.obstacles.types.length + scrollGame.items.types.length];
+      const goalImg = restImgs[scrollGame.obstacles.types.length + scrollGame.items.types.length + 1];
 
       const spawnObstacle = (type: string) => {
-        gameStateRef.current.obstacles.push({ 
-          x: canvas.width, 
+        gameStateRef.current.obstacles.push({
+          x: canvas.width,
           y: scrollGame.obstacles.spawnSettings.yPosition,
-          width: scrollGame.obstacles.size.width, 
-          height: scrollGame.obstacles.size.height, 
-          type 
+          width: scrollGame.obstacles.size.width,
+          height: scrollGame.obstacles.size.height,
+          type
         });
       };
 
@@ -138,7 +177,7 @@ export default function ScrollGame() {
         const elapsed = timestamp - startTimeRef.current;
 
         if (elapsed > scrollGame.gameSettings.duration * 1000) {
-          navigateToScrollGameResult(gameStateRef.current.score, gameStateRef.current.lives);
+          handleResultAndNavigation(gameStateRef.current.score, gameStateRef.current.lives);
           return;
         }
 
@@ -156,15 +195,15 @@ export default function ScrollGame() {
           setJumping(false);
         }
         ctx.drawImage(
-          player.vy !== 0 ? playerJumpImg : playerImg, 
-          player.x, 
-          player.y, 
-          player.width, 
+          player.vy !== 0 ? playerJumpImg : playerImg,
+          player.x,
+          player.y,
+          player.width,
           player.height
         );
 
         gameStateRef.current.spawnCounter++;
-        
+
         // 使用配置中的障碍物生成间隔
         if (gameStateRef.current.spawnCounter % scrollGame.obstacles.spawnSettings.interval === 0) {
           const type = scrollGame.obstacles.types[Math.floor(Math.random() * scrollGame.obstacles.types.length)];
@@ -213,7 +252,7 @@ export default function ScrollGame() {
             player.y + player.height > item.y + tolerance;
 
           if (isColliding) {
-            gameStateRef.current.score[item.type] +=  1;
+            gameStateRef.current.score[item.type] += 1;
             return false;
           }
           return item.x + item.width > 0;
@@ -258,7 +297,7 @@ export default function ScrollGame() {
 
         requestRef.current = requestAnimationFrame(gameLoop);
       };
-      
+
       setLoaded(true);
       requestRef.current = requestAnimationFrame(gameLoop);
     }).catch((error) => {
@@ -286,7 +325,7 @@ export default function ScrollGame() {
   const loadingSubtitleStyles = scrollGame.ui.loading.styles.subtitle;
 
   return (
-    <div 
+    <div
       className={`relative flex flex-col items-center justify-center h-screen`}
     >
       {!loaded && (

@@ -1,15 +1,5 @@
-// drawUtils.ts
-
 /**
  * 畫條形圖（可用於血條、時間條）
- * @param ctx - Canvas 2D 渲染上下文
- * @param x - X 座標
- * @param y - Y 座標
- * @param width - 寬度
- * @param height - 高度
- * @param ratio - 填充比例 (0 ~ 1)
- * @param color - 填充顏色
- * @param borderColor - 邊框顏色
  */
 export function drawBar(
   ctx: CanvasRenderingContext2D,
@@ -32,7 +22,7 @@ export function drawBar(
 }
 
 /**
- * 圖標配置介面
+ * 圖標配置
  */
 interface IconConfig {
   size: number;
@@ -42,9 +32,6 @@ interface IconConfig {
 
 /**
  * 畫 icon + 數量
- * @param ctx - Canvas 2D 渲染上下文
- * @param iconDataList - 圖標和數量的陣列
- * @param config - 圖標配置
  */
 export function drawIcons(
   ctx: CanvasRenderingContext2D,
@@ -61,15 +48,7 @@ export function drawIcons(
 }
 
 /**
- * 畫出16-bit格子風格條（帶像素感漸層 + 左側素材圖）
- * @param ctx - Canvas 2D 渲染上下文
- * @param x - X 座標
- * @param y - Y 座標
- * @param width - 寬度
- * @param height - 高度
- * @param ratio - 填充比例 (0 ~ 1)
- * @param gradientColors - 漸層用顏色陣列
- * @param icon - 左側圖標素材
+ * 16-bit格子風格條
  */
 export function drawPixelBar(
   ctx: CanvasRenderingContext2D,
@@ -85,7 +64,7 @@ export function drawPixelBar(
   const segmentWidth = width / segmentCount;
   const filledCount = Math.floor(ratio * segmentCount);
 
-  // 畫邊框背景
+  // 邊框背景
   ctx.fillStyle = '#3c3c3c';
   ctx.fillRect(x - 2, y - 2, width + 4, height + 4);
 
@@ -107,7 +86,7 @@ export function drawPixelBar(
   ctx.strokeStyle = '#ffffff';
   ctx.strokeRect(x - 1, y - 1, width + 2, height + 2);
 
-  // 畫左側圖示
+  // 左側圖示
   if (icon) {
     ctx.drawImage(icon, x - height - 14, y - 4, height + 8, height + 8);
   }

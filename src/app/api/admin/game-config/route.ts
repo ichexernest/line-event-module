@@ -1,5 +1,4 @@
-// app/api/admin/game-config/route.ts
-import { getGameConfig, switchGameMode, toggleGameEnabled } from '@/utils/prisma_db'
+import { getGameConfig, switchGameMode, toggleGameEnabled, togglePlayOnce } from '@/utils/prisma_db'
 import { revalidatePath } from 'next/cache'
 
 export async function GET() {
@@ -14,7 +13,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { action, mode, enabled } = await request.json()
+    const { action, mode, enabled, onlyPlayOnce } = await request.json()
     const userAgent = request.headers.get('user-agent') || undefined
     
     let result
@@ -26,6 +25,8 @@ export async function POST(request: Request) {
       result = await switchGameMode(mode, userAgent)
     } else if (action === 'toggle_enabled' && typeof enabled === 'boolean') {
       result = await toggleGameEnabled(enabled, userAgent)
+    } else if (action === 'toggle_play_once' && typeof onlyPlayOnce === 'boolean') {
+      result = await togglePlayOnce(onlyPlayOnce, userAgent)
     } else {
       return Response.json({ error: 'Invalid action' }, { status: 400 })
     }

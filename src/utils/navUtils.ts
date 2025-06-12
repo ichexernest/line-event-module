@@ -8,17 +8,16 @@ export const navigateToScrollGameResult = (score: unknown, lives: number) => {
   window.location.href = `/result?${params.toString()}`
 }
 
-export const navigateToCardMakerResult = (cardId?: string, cardName?: string) => {
+export const navigateToCardMakerResult = () => {
+  window.location.href = '/result'
+}
+
+export const navigateToSpinWheelResult = (prize?: string, prizeCoupon?: string) => {
   const params = new URLSearchParams()
   
-  if (cardId) params.set('cardId', cardId)
-  if (cardName) params.set('cardName', cardName)
+  if (prize) params.set('prize', prize)
+  if (prizeCoupon) params.set('prizeCoupon', prizeCoupon)
   
   const queryString = params.toString()
   window.location.href = `/result${queryString ? '?' + queryString : ''}`
-}
-
-// 或者 CardMaker 不需要參數的簡單版本
-export const navigateToCardMakerResultSimple = () => {
-  window.location.href = '/result'
 }

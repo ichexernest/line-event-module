@@ -3,22 +3,27 @@
 A modular and customizable framework for LINE marketing campaigns, ideal for brand promotions and interactive events.
 
 ---
+## Game Modes
 
+* **Card Maker** - Allow users to create personalized cards
+* **Scroll Game** - Interactive Side-scrolling Game
+* **Spin Wheel** - Lucky wheel lottery game
+
+---
 ## Key Features
 
-* **Modular Activity Flow**: Easy to replicate three-step process: Home (`/start`) → Game Interaction (`/playing`) → Result (`/result`).
-* **Centralized Control**: All configurations managed via the `GameConfig` database, enabling easy updates without changing the source code.
-* **Extensible Game Modes**:
-  * 🖼️ **Card Maker**: Generate and share custom image cards.
-  * 🎮 **Scroll Game**: Interactive gameplay with scoring and life tracking.
-  * 🎰 **Spin Wheel**: Prize distribution with discount code delivery.
-* **Centralized Resource Management**: Manage all images, texts, and discount codes through a single `/configs.ts` file.
-
+* **Game Mode Switching** - Dynamically switch between different game modes
+* **Game Enable/Disable Control** - Turn the entire game system on or off
+* **Single Play Limitation** - Control whether users can only play once
+* **User Data Management** - Automatically or manually clear user temporary data
+* **Operation Logs** - Complete recording of all administrative operations
+* **Modular Activity Flow**: Easy to replicate three-step process: Home  → Game Interaction  → Result 
+* **Centralized Resource Management**: Manage all images, texts, and discount codes through a single config file
 ---
 
 ## Tech Stack
 
-* **Frontend**: Next.js 15, React, TailwindCSS, Konva.js
+* **Frontend**: Next.js 15, React, TailwindCSS, Konva.js, Canvas
 * **Backend**: Next.js API Routes
 * **Database**: Prisma ORM with PostgreSQL
 * **Authentication**: Clerk

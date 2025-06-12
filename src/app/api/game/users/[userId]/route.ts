@@ -6,13 +6,13 @@ export async function GET(
   { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
-    const { userId } =await params
-
-    if (!userId) {
+    const { userId } = await params
+    const type = req.nextUrl.searchParams.get('type');
+    if (!userId || !type) {
       return NextResponse.json({ error: 'userId is required' }, { status: 400 })
     }
 
-    const userTemp = await findUserTempByUserId(userId)
+    const userTemp = await findUserTempByUserId(userId, type)
 
     return NextResponse.json({ exists: !!userTemp, data: userTemp }, { status: 200 })
   } catch (error) {

@@ -54,7 +54,6 @@ export default function StartView() {
         throw new Error(`獲取遊戲設置失敗: ${response.status}`)
       }
       const config = await response.json()
-      alert(`遊戲設定抓到 onlyPlayOnce=${config.onlyPlayOnce}`)
       setGameConfig(config)
     } catch (error) {
       console.error('獲取遊戲設置失敗:', error)
@@ -94,8 +93,8 @@ export default function StartView() {
   const checkUserRecord = async (userId: string) => {
     try {
       setIsCheckingRecord(true)
-      
-      const response = await fetch(`/api/game/users/${userId}`)
+      console.log(`檢查用戶記錄:${userId}`)
+      const response = await fetch(`/api/game/users/${userId}?type=${gameConfig!.currentMode}`)
       if (!response.ok) {
         throw new Error(`API 請求失敗: ${response.status}`)
       }
@@ -143,7 +142,6 @@ export default function StartView() {
     if (gameConfig?.onlyPlayOnce) {
       // 需要檢查用戶記錄
       const hasRecord = await checkUserRecord(userId)
-      
       if (!hasRecord) {
         // 沒有記錄，進入遊戲
         router.push('/playing')

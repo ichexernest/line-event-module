@@ -95,9 +95,14 @@ export async function getGameLogs(limit = 50) {
   })
 }
 
-export async function findUserTempByUserId  (userId: string)  {
+export async function findUserTempByUserId  (userId: string, type: string)  {
   return await prisma.userTemp.findFirst({
-    where: { userId },
+    where: { userId,
+            userContent: {
+        contains: `"type":"${type}"`
+      }
+     },
+    
   });
 };
 

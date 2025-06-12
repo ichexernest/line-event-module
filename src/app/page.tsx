@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation'
 import { getGameConfig } from '@/utils/prisma_db'
 import { BASE_CONFIG, COLOR_SCHEME } from '@/configs/configs'
 
+export const dynamic = 'force-dynamic'
+
 export default async function HomePage() {
   const config = await getGameConfig()
   if (config.isEnabled) {

@@ -28,3 +28,8 @@ A modular and customizable framework for LINE marketing campaigns, ideal for bra
 * **Database**: Prisma ORM with PostgreSQL
 * **Authentication**: Clerk
 * **Styling**: TailwindCSS
+
+
+## Sample
+
+![Theme](https://github.com/ichexernest/line-event-module/blob/main/preview.png) 
